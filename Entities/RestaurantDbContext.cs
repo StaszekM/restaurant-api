@@ -5,9 +5,9 @@ namespace RestaurantApi.Entities;
 public class RestaurantDbContext : DbContext
 {
     private string _connectionString = "Server=localhost\\SQLEXPRESS;Database=RestaurantDb;Trusted_Connection=True;";
-    public DbSet<Restaurant> Restaurants { get; set; }
-    public DbSet<Address> Addresses { get; set; }
-    public DbSet<Dish> Dishes { get; set; }
+    public DbSet<Restaurant> Restaurants { get; set; } = null!;
+    public DbSet<Address> Addresses { get; set; } = null!;
+    public DbSet<Dish> Dishes { get; set; } = null!;
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

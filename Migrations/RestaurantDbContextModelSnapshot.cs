@@ -40,7 +40,7 @@ namespace RestaurantApi.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Addresses");
+                    b.ToTable("Addresses", (string)null);
                 });
 
             modelBuilder.Entity("RestaurantApi.Entities.Dish", b =>
@@ -68,7 +68,7 @@ namespace RestaurantApi.Migrations
 
                     b.HasIndex("RestaurantId");
 
-                    b.ToTable("Dishes");
+                    b.ToTable("Dishes", (string)null);
                 });
 
             modelBuilder.Entity("RestaurantApi.Entities.Restaurant", b =>
@@ -107,7 +107,7 @@ namespace RestaurantApi.Migrations
                     b.HasIndex("AddressId")
                         .IsUnique();
 
-                    b.ToTable("Restaurants");
+                    b.ToTable("Restaurants", (string)null);
                 });
 
             modelBuilder.Entity("RestaurantApi.Entities.Dish", b =>
