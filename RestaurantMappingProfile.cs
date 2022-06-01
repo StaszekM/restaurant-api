@@ -10,5 +10,8 @@ public class RestaurantMappingProfile : AutoMapper.Profile
             .ForMember(m => m.PostalCode, c => c.MapFrom(s => s.Address.PostalCode));
 
         CreateMap<Dish, DishDto>();
+
+        CreateMap<CreateRestaurantDto, Restaurant>()
+            .ForMember(m => m.Address, c => c.MapFrom(dto => new Address { City = dto.City, PostalCode = dto.PostalCode, Street = dto.Street }));
     }
 }

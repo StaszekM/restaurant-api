@@ -29,6 +29,7 @@ public class RestaurantController : ControllerBase
 
         return Ok(restaurantDtos);
     }
+
     [HttpGet]
     [Route("{id}")]
     public ActionResult<RestaurantDto> GetById(int id)
@@ -44,5 +45,15 @@ public class RestaurantController : ControllerBase
         }
 
         return NotFound();
+    }
+
+    [HttpPost]
+    public ActionResult CreateRestaurant([FromBody] CreateRestaurantDto dto)
+    {
+        var restaurant = _mapper.Map<Restaurant>(dto);
+        _context.Restaurants.Add(restaurant);
+        _context.SaveChanges();
+
+        return Created($"/api/restaurant/{restaurant.Id}", null);
     }
 }
