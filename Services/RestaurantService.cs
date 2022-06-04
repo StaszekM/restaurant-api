@@ -11,6 +11,7 @@ public interface IRestaurantService
     IEnumerable<RestaurantDto> GetAll();
     RestaurantDto? GetById(int id);
     bool Delete(int id);
+    bool Edit(int id, EditRestaurantDto dto);
 }
 
 public class RestaurantService : IRestaurantService
@@ -59,14 +60,34 @@ public class RestaurantService : IRestaurantService
         return restaurant.Id;
     }
 
-    public bool Delete(int id) {
+    public bool Delete(int id)
+    {
         var restaurant = _context.Restaurants.FirstOrDefault(r => r.Id == id);
 
-        if (restaurant is null) {
+        if (restaurant is null)
+        {
             return false;
         }
 
         _context.Restaurants.Remove(restaurant);
+        _context.SaveChanges();
+
+        return true;
+    }
+
+    public bool Edit(int id, EditRestaurantDto dto)
+    {
+        var restaurant = _context.Restaurants.FirstOrDefault(r => r.Id == id);
+
+        if (restaurant is null)
+        {
+            return false;
+        }
+
+        restaurant.Name = dto.Name;
+        restaurant.Description = dto.Description;
+        restaurant.HasDelivery = (bool) dto.HasDelivery!;
+        
         _context.SaveChanges();
 
         return true;

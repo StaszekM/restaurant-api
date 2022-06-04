@@ -59,4 +59,21 @@ public class RestaurantController : ControllerBase
 
         return NotFound();
     }
+
+    [HttpPut("{id}")]
+    public ActionResult Edit([FromRoute] int id, [FromBody] EditRestaurantDto dto)
+    {
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
+
+        var modified = _restaurantService.Edit(id, dto);
+        if (modified)
+        {
+            return NoContent();
+        }
+
+        return NotFound();
+    }
 }
