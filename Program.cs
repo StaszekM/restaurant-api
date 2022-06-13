@@ -14,6 +14,7 @@ builder.Services.AddScoped<RestaurantSeeder>();
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 builder.Services.AddScoped<IRestaurantService, RestaurantService>();
 builder.Services.AddScoped<ErrorHandlingMiddleware>();
+builder.Services.AddSwaggerGen();
 
 Console.WriteLine("Setting up logging...");
 builder.Logging.ClearProviders();
@@ -30,6 +31,12 @@ app.Services.CreateScope().ServiceProvider.GetService<RestaurantSeeder>()?.Seed(
 app.UseMiddleware<ErrorHandlingMiddleware>();
 
 app.UseHttpsRedirection();
+
+app.UseSwagger();
+app.UseSwaggerUI(options =>
+{
+    options.SwaggerEndpoint("/swagger/v1/swagger.json", "RestaurantApi");
+});
 
 app.MapControllers();
 
