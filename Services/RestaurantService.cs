@@ -18,11 +18,13 @@ public class RestaurantService : IRestaurantService
 {
     private RestaurantDbContext _context;
     private IMapper _mapper;
+    private ILogger<RestaurantService> _logger;
 
-    public RestaurantService(RestaurantDbContext context, IMapper mapper)
+    public RestaurantService(RestaurantDbContext context, IMapper mapper, ILogger<RestaurantService> logger)
     {
         _context = context;
         _mapper = mapper;
+        _logger = logger;
     }
 
     public RestaurantDto? GetById(int id)
@@ -62,6 +64,8 @@ public class RestaurantService : IRestaurantService
 
     public bool Delete(int id)
     {
+        _logger.LogError($"Restaurant with id {id} - DELETE action invoked.");
+
         var restaurant = _context.Restaurants.FirstOrDefault(r => r.Id == id);
 
         if (restaurant is null)
@@ -86,8 +90,8 @@ public class RestaurantService : IRestaurantService
 
         restaurant.Name = dto.Name;
         restaurant.Description = dto.Description;
-        restaurant.HasDelivery = (bool) dto.HasDelivery!;
-        
+        restaurant.HasDelivery = (bool)dto.HasDelivery!;
+
         _context.SaveChanges();
 
         return true;

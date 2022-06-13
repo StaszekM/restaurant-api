@@ -1,23 +1,39 @@
 using RestaurantApi.Services;
 using RestaurantApi.Entities;
+using RestaurantApi.Middleware;
+using NLog.Web;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
+Console.WriteLine("Setting up services...");
 builder.Services.AddControllers();
 builder.Services.AddDbContext<RestaurantDbContext>();
 builder.Services.AddScoped<RestaurantSeeder>();
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 builder.Services.AddScoped<IRestaurantService, RestaurantService>();
+builder.Services.AddScoped<ErrorHandlingMiddleware>();
 
+Console.WriteLine("Setting up logging...");
+builder.Logging.ClearProviders();
+builder.Logging.SetMinimumLevel(Microsoft.Extensions.Logging.LogLevel.Trace);
+builder.Host.UseNLog();
+
+Console.WriteLine("Building...");
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
 
 app.Services.CreateScope().ServiceProvider.GetService<RestaurantSeeder>()?.Seed();
 
+app.UseMiddleware<ErrorHandlingMiddleware>();
+
 app.UseHttpsRedirection();
 
 app.MapControllers();
 
+Console.WriteLine("Running...");
 app.Run();
+
+NLog.LogManager.Shutdown();
