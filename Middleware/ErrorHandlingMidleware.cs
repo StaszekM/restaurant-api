@@ -1,3 +1,4 @@
+using RestaurantApi.Exceptions;
 namespace RestaurantApi.Middleware;
 
 public class ErrorHandlingMiddleware : IMiddleware
@@ -12,6 +13,11 @@ public class ErrorHandlingMiddleware : IMiddleware
         try
         {
             await next.Invoke(context);
+        }
+        catch (NotFoundException nfe)
+        {
+            context.Response.StatusCode = 404;
+            await context.Response.WriteAsync(nfe.Message);
         }
         catch (Exception e)
         {
