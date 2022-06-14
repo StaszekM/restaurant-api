@@ -34,4 +34,10 @@ public class DishController : ControllerBase
         var dishes = _dishService.GetAll(restaurantId);
         return dishes;
     }
+
+    [HttpDelete]
+    public ActionResult Delete([FromRoute] int restaurantId) {
+        _dishService.DeleteAll(restaurantId);
+        return NoContent();
+    }
 }

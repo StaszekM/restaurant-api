@@ -11,6 +11,7 @@ public interface IDishService
     public int Create(int restaurantId, CreateDishDto createDishDto);
     DishDto GetById(int restaurantId, int dishId);
     List<DishDto> GetAll(int restaurantId);
+    void DeleteAll(int restaurantId);
 }
 
 public class DishService : IDishService
@@ -28,9 +29,7 @@ public class DishService : IDishService
     {
         var restaurant = _context.Restaurants.FirstOrDefault(r => r.Id == restaurantId);
         if (restaurant is null)
-        {
             throw new NotFoundException($"Restaurant with id {restaurantId} not found");
-        }
 
         var dishEntity = _mapper.Map<Dish>(createDishDto);
 
@@ -70,5 +69,18 @@ public class DishService : IDishService
 
         var dishDtos = _mapper.Map<List<DishDto>>(restaurant.Dishes);
         return dishDtos;
+    }
+
+    public void DeleteAll(int restaurantId)
+    {
+        var restaurant = _context.Restaurants
+            .Include(r => r.Dishes)
+            .FirstOrDefault(r => r.Id == restaurantId);
+
+        if (restaurant is null)
+            throw new NotFoundException($"Restaurant with id {restaurantId} not found");
+
+        _context.RemoveRange(restaurant.Dishes);
+        _context.SaveChanges();
     }
 }
