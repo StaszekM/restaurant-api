@@ -15,6 +15,7 @@ builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 builder.Services.AddScoped<IRestaurantService, RestaurantService>();
 builder.Services.AddScoped<ErrorHandlingMiddleware>();
 builder.Services.AddScoped<TimeTrackingMiddleware>();
+builder.Services.AddScoped<IDishService, DishService>();
 builder.Services.AddSwaggerGen();
 
 Console.WriteLine("Setting up logging...");
