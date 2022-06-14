@@ -20,4 +20,18 @@ public class DishController : ControllerBase
         int dishId = _dishService.Create(restaurantId, createDishDto);
         return Created($"api/restaurant/{restaurantId}/dish/{dishId}", null);
     }
+
+    [Route("{dishId}")]
+    [HttpGet]
+    public ActionResult<DishDto> Get([FromRoute] int restaurantId, [FromRoute] int dishId)
+    {
+        var dish = _dishService.GetById(restaurantId, dishId);
+        return dish;
+    }
+
+    [HttpGet]
+    public List<DishDto> GetAll([FromRoute] int restaurantId) {
+        var dishes = _dishService.GetAll(restaurantId);
+        return dishes;
+    }
 }
