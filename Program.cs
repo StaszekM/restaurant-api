@@ -14,6 +14,7 @@ builder.Services.AddScoped<RestaurantSeeder>();
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 builder.Services.AddScoped<IRestaurantService, RestaurantService>();
 builder.Services.AddScoped<ErrorHandlingMiddleware>();
+builder.Services.AddScoped<TimeTrackingMiddleware>();
 builder.Services.AddSwaggerGen();
 
 Console.WriteLine("Setting up logging...");
@@ -28,6 +29,7 @@ var app = builder.Build();
 
 app.Services.CreateScope().ServiceProvider.GetService<RestaurantSeeder>()?.Seed();
 
+app.UseMiddleware<TimeTrackingMiddleware>();
 app.UseMiddleware<ErrorHandlingMiddleware>();
 
 app.UseHttpsRedirection();
