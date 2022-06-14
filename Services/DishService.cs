@@ -12,6 +12,7 @@ public interface IDishService
     DishDto GetById(int restaurantId, int dishId);
     List<DishDto> GetAll(int restaurantId);
     void DeleteAll(int restaurantId);
+    void Delete(int restaurantId, int dishId);
 }
 
 public class DishService : IDishService
@@ -42,9 +43,16 @@ public class DishService : IDishService
 
     public DishDto GetById(int restaurantId, int dishId)
     {
+        var dish = GetDishById(restaurantId, dishId);
+
+        return _mapper.Map<DishDto>(dish);
+    }
+
+    private Dish GetDishById(int restaurantId, int dishId)
+    {
         var restaurant = _context.Restaurants
-            .Include(r => r.Dishes)
-            .FirstOrDefault(r => r.Id == restaurantId);
+                    .Include(r => r.Dishes)
+                    .FirstOrDefault(r => r.Id == restaurantId);
 
         if (restaurant is null)
             throw new NotFoundException($"Restaurant with id {restaurantId} not found");
@@ -55,7 +63,7 @@ public class DishService : IDishService
         if (dish is null || dish.RestaurantId != restaurantId)
             throw new NotFoundException($"Dish with id {dishId} not found");
 
-        return _mapper.Map<DishDto>(dish);
+        return dish;
     }
 
     public List<DishDto> GetAll(int restaurantId)
@@ -81,6 +89,13 @@ public class DishService : IDishService
             throw new NotFoundException($"Restaurant with id {restaurantId} not found");
 
         _context.RemoveRange(restaurant.Dishes);
+        _context.SaveChanges();
+    }
+
+    public void Delete(int restaurantId, int dishId)
+    {
+        var dish = GetDishById(restaurantId, dishId);
+        _context.Remove(dish);
         _context.SaveChanges();
     }
 }

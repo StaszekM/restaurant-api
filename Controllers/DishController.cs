@@ -30,14 +30,24 @@ public class DishController : ControllerBase
     }
 
     [HttpGet]
-    public List<DishDto> GetAll([FromRoute] int restaurantId) {
+    public List<DishDto> GetAll([FromRoute] int restaurantId)
+    {
         var dishes = _dishService.GetAll(restaurantId);
         return dishes;
     }
 
     [HttpDelete]
-    public ActionResult Delete([FromRoute] int restaurantId) {
+    public ActionResult DeleteAll([FromRoute] int restaurantId)
+    {
         _dishService.DeleteAll(restaurantId);
+        return NoContent();
+    }
+
+    [HttpDelete]
+    [Route("{dishId}")]
+    public ActionResult DeleteOne([FromRoute] int restaurantId, [FromRoute] int dishId)
+    {
+        _dishService.Delete(restaurantId, dishId);
         return NoContent();
     }
 }
