@@ -16,6 +16,7 @@ builder.Services.AddScoped<IRestaurantService, RestaurantService>();
 builder.Services.AddScoped<ErrorHandlingMiddleware>();
 builder.Services.AddScoped<TimeTrackingMiddleware>();
 builder.Services.AddScoped<IDishService, DishService>();
+builder.Services.AddScoped<IAccountService, AccountService>();
 builder.Services.AddSwaggerGen();
 
 Console.WriteLine("Setting up logging...");
