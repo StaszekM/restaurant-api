@@ -19,6 +19,13 @@ public class RestaurantSeeder
                 _dbContext.Restaurants.AddRange(restaurants);
                 _dbContext.SaveChanges();
             }
+
+            if (!_dbContext.Roles.Any())
+            {
+                var roles = GetRoles();
+                _dbContext.Roles.AddRange(roles);
+                _dbContext.SaveChanges();
+            }
         }
     }
 
@@ -73,5 +80,13 @@ public class RestaurantSeeder
             };
 
         return restaurants;
+    }
+    private IEnumerable<Role> GetRoles()
+    {
+        return new List<Role>() {
+            new Role() {Name = "User"},
+            new Role() {Name = "Manager"},
+            new Role() {Name = "Admin"}
+        };
     }
 }
