@@ -8,6 +8,8 @@ public class RestaurantDbContext : DbContext
     public DbSet<Restaurant> Restaurants { get; set; } = null!;
     public DbSet<Address> Addresses { get; set; } = null!;
     public DbSet<Dish> Dishes { get; set; } = null!;
+    public DbSet<Role> Roles { get; set; } = null!;
+    public DbSet<User> Users { get; set; } = null!;
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -17,6 +19,9 @@ public class RestaurantDbContext : DbContext
 
         modelBuilder.Entity<Address>().Property(a => a.Street).IsRequired().HasMaxLength(50);
         modelBuilder.Entity<Address>().Property(a => a.City).IsRequired().HasMaxLength(50);
+
+        modelBuilder.Entity<User>().Property(u => u.Email).IsRequired();
+        modelBuilder.Entity<Role>().Property(r => r.Name).IsRequired();
     }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
