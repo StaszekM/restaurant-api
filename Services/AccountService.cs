@@ -28,7 +28,7 @@ public class AccountService : IAccountService
             Nationality = registerUserDto.Nationality,
             RoleId = registerUserDto.RoleId,
         };
-        
+
         newUser.PasswordHash = _hasher.HashPassword(newUser, registerUserDto.Password);
         _context.Users.Add(newUser);
         _context.SaveChanges();
