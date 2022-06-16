@@ -3,16 +3,34 @@ using RestaurantApi.Entities;
 using RestaurantApi.Middleware;
 using NLog.Web;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.IdentityModel.Tokens;
 using FluentValidation.AspNetCore;
 using FluentValidation;
 using RestaurantApi.Models;
 using RestaurantApi.Models.Validators;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
+
+var authenticationSettings = new AuthenticationSettings();
+builder.Configuration.GetSection("Authentication").Bind(authenticationSettings);
 
 // Add services to the container.
 
 Console.WriteLine("Setting up services...");
+builder.Services.AddAuthentication(options => {
+    options.DefaultAuthenticateScheme = "Bearer";
+    options.DefaultScheme = "Bearer";
+    options.DefaultChallengeScheme = "Bearer";
+}).AddJwtBearer(cfg => {
+    cfg.RequireHttpsMetadata = false;
+    cfg.SaveToken = true;
+    cfg.TokenValidationParameters = new TokenValidationParameters() {
+        ValidIssuer = authenticationSettings.JwtIssuer,
+        ValidAudience = authenticationSettings.JwtIssuer,
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(authenticationSettings.JwtKey))
+    };
+});
 builder.Services.AddControllers().AddFluentValidation();
 builder.Services.AddDbContext<RestaurantDbContext>();
 builder.Services.AddScoped<RestaurantSeeder>();
@@ -24,6 +42,7 @@ builder.Services.AddScoped<IDishService, DishService>();
 builder.Services.AddScoped<IAccountService, AccountService>();
 builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
 builder.Services.AddScoped<IValidator<RegisterUserDto>, RegisterUserDtoValidator>();
+builder.Services.AddSingleton(authenticationSettings);
 builder.Services.AddSwaggerGen();
 
 Console.WriteLine("Setting up logging...");
@@ -40,7 +59,7 @@ app.Services.CreateScope().ServiceProvider.GetService<RestaurantSeeder>()?.Seed(
 
 app.UseMiddleware<TimeTrackingMiddleware>();
 app.UseMiddleware<ErrorHandlingMiddleware>();
-
+app.UseAuthentication();
 app.UseHttpsRedirection();
 
 app.UseSwagger();
