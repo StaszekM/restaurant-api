@@ -2,6 +2,7 @@ using RestaurantApi.Services;
 using RestaurantApi.Entities;
 using RestaurantApi.Middleware;
 using NLog.Web;
+using Microsoft.AspNetCore.Identity;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,6 +18,7 @@ builder.Services.AddScoped<ErrorHandlingMiddleware>();
 builder.Services.AddScoped<TimeTrackingMiddleware>();
 builder.Services.AddScoped<IDishService, DishService>();
 builder.Services.AddScoped<IAccountService, AccountService>();
+builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
 builder.Services.AddSwaggerGen();
 
 Console.WriteLine("Setting up logging...");
