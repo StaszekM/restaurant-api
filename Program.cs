@@ -43,6 +43,7 @@ builder.Services.AddAuthorization(options => {
 });
 builder.Services.AddScoped<IAuthorizationHandler, MinimumAgeRequirementHandler>(); // I can add more handlers under this interface, DI will know what implementation is needed
 builder.Services.AddScoped<IAuthorizationHandler, ResourceOperationRequirementHandler>();
+builder.Services.AddScoped<IUserContextService, UserContextService>();
 builder.Services.AddControllers().AddFluentValidation();
 builder.Services.AddDbContext<RestaurantDbContext>();
 builder.Services.AddScoped<RestaurantSeeder>();
@@ -55,6 +56,7 @@ builder.Services.AddScoped<IAccountService, AccountService>();
 builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
 builder.Services.AddScoped<IValidator<RegisterUserDto>, RegisterUserDtoValidator>();
 builder.Services.AddSingleton(authenticationSettings);
+builder.Services.AddHttpContextAccessor();
 builder.Services.AddSwaggerGen();
 
 Console.WriteLine("Setting up logging...");
