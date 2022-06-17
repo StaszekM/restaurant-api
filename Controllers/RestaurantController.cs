@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using RestaurantApi.Models;
@@ -12,9 +13,9 @@ public class RestaurantController : ControllerBase
 {
     private IRestaurantService _restaurantService;
 
-    public RestaurantController(IRestaurantService service)
+    public RestaurantController(IRestaurantService restaurantService)
     {
-        _restaurantService = service;
+        _restaurantService = restaurantService;
     }
 
     [HttpGet]
@@ -37,20 +38,21 @@ public class RestaurantController : ControllerBase
     [Authorize(Roles = "Admin,Manager")]
     public ActionResult CreateRestaurant([FromBody] CreateRestaurantDto dto)
     {
-        var id = _restaurantService.Create(dto);
+        var userId = int.Parse(User.FindFirst(c => c.Type == ClaimTypes.NameIdentifier).Value);
+        var id = _restaurantService.Create(dto, userId);
         return Created($"/api/restaurant/{id}", null);
     }
     [HttpDelete("{id}")]
     public ActionResult Delete([FromRoute] int id)
     {
-        _restaurantService.Delete(id);
+        _restaurantService.Delete(id, User);
         return NoContent();
     }
 
     [HttpPut("{id}")]
     public ActionResult Edit([FromRoute] int id, [FromBody] EditRestaurantDto dto)
     {
-        _restaurantService.Edit(id, dto);
+        _restaurantService.Edit(id, dto, User);
         return NoContent();
     }
 }

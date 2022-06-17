@@ -14,6 +14,10 @@ public class ErrorHandlingMiddleware : IMiddleware
         {
             await next.Invoke(context);
         }
+        catch (ForbiddenException)
+        {
+            context.Response.StatusCode = 403;
+        }
         catch (NotFoundException nfe)
         {
             context.Response.StatusCode = 404;
