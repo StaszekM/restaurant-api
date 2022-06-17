@@ -40,9 +40,13 @@ builder.Services.AddAuthorization(options => {
     options.AddPolicy("AtLeast20", policyBuilder => {
         policyBuilder.AddRequirements(new MinimumAgeRequirement(20));
     });
+    options.AddPolicy("AtLeast2Restaurants", policyBuilder => {
+        policyBuilder.AddRequirements(new MinRestaurantsCreatedRequirement(2));
+    });
 });
 builder.Services.AddScoped<IAuthorizationHandler, MinimumAgeRequirementHandler>(); // I can add more handlers under this interface, DI will know what implementation is needed
 builder.Services.AddScoped<IAuthorizationHandler, ResourceOperationRequirementHandler>();
+builder.Services.AddScoped<IAuthorizationHandler, MinRestaurantsCreatedRequirementHandler>();
 builder.Services.AddScoped<IUserContextService, UserContextService>();
 builder.Services.AddControllers().AddFluentValidation();
 builder.Services.AddDbContext<RestaurantDbContext>();
