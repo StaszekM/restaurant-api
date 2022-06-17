@@ -45,10 +45,18 @@ public class AccountService : IAccountService
         var claims = new List<Claim>() {
             new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
             new Claim(ClaimTypes.Name, $"{user.FirstName} {user.LastName}"),
-            new Claim(ClaimTypes.Role, $"{user.Role.Name}"),
-            new Claim("DateOfBirth", user.DateOfBirth.Value.ToString("yyy-MM-dd")),
-            new Claim("Nationality", user.Nationality)
+            new Claim(ClaimTypes.Role, $"{user.Role.Name}")
         };
+
+        if (!string.IsNullOrEmpty(user.Nationality))
+        {
+            claims.Add(new Claim("Nationality", user.Nationality));
+        }
+
+        if (user.DateOfBirth is not null)
+        {
+            claims.Add(new Claim("DateOfBirth", user.DateOfBirth.Value.ToString("yyy-MM-dd")));
+        }
 
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_authenticationSettings.JwtKey));
         var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);

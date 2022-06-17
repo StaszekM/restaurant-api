@@ -31,6 +31,11 @@ builder.Services.AddAuthentication(options => {
         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(authenticationSettings.JwtKey))
     };
 });
+builder.Services.AddAuthorization(options => {
+    options.AddPolicy("HasNationality", policyBuilder => {
+        policyBuilder.RequireClaim("Nationality");
+    });
+});
 builder.Services.AddControllers().AddFluentValidation();
 builder.Services.AddDbContext<RestaurantDbContext>();
 builder.Services.AddScoped<RestaurantSeeder>();
@@ -67,6 +72,8 @@ app.UseSwaggerUI(options =>
 {
     options.SwaggerEndpoint("/swagger/v1/swagger.json", "RestaurantApi");
 });
+
+app.UseAuthorization();
 
 app.MapControllers();
 

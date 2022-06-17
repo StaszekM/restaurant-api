@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using RestaurantApi.Models;
 using RestaurantApi.Services;
@@ -6,6 +7,7 @@ namespace RestaurantApi.Controllers;
 
 [Route("api/restaurant")]
 [ApiController]
+[Authorize]
 public class RestaurantController : ControllerBase
 {
     private IRestaurantService _restaurantService;
@@ -16,6 +18,7 @@ public class RestaurantController : ControllerBase
     }
 
     [HttpGet]
+    [Authorize(Policy = "HasNationality")]
     public ActionResult<IEnumerable<RestaurantDto>> GetAll()
     {
         var restaurantDtos = _restaurantService.GetAll();
@@ -31,6 +34,7 @@ public class RestaurantController : ControllerBase
     }
 
     [HttpPost]
+    [Authorize(Roles = "Admin,Manager")]
     public ActionResult CreateRestaurant([FromBody] CreateRestaurantDto dto)
     {
         var id = _restaurantService.Create(dto);
