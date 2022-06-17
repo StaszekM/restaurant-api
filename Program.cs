@@ -9,6 +9,8 @@ using FluentValidation;
 using RestaurantApi.Models;
 using RestaurantApi.Models.Validators;
 using System.Text;
+using RestaurantApi.Authorization;
+using Microsoft.AspNetCore.Authorization;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -35,7 +37,11 @@ builder.Services.AddAuthorization(options => {
     options.AddPolicy("HasNationality", policyBuilder => {
         policyBuilder.RequireClaim("Nationality");
     });
+    options.AddPolicy("AtLeast20", policyBuilder => {
+        policyBuilder.AddRequirements(new MinimumAgeRequirement(20));
+    });
 });
+builder.Services.AddScoped<IAuthorizationHandler, MinimumAgeRequirementHandler>(); // I can add more handlers under this interface, DI will know what implementation is needed
 builder.Services.AddControllers().AddFluentValidation();
 builder.Services.AddDbContext<RestaurantDbContext>();
 builder.Services.AddScoped<RestaurantSeeder>();
