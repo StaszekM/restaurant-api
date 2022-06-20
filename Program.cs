@@ -20,27 +20,34 @@ builder.Configuration.GetSection("Authentication").Bind(authenticationSettings);
 // Add services to the container.
 
 Console.WriteLine("Setting up services...");
-builder.Services.AddAuthentication(options => {
+builder.Services.AddAuthentication(options =>
+{
     options.DefaultAuthenticateScheme = "Bearer";
     options.DefaultScheme = "Bearer";
     options.DefaultChallengeScheme = "Bearer";
-}).AddJwtBearer(cfg => {
+}).AddJwtBearer(cfg =>
+{
     cfg.RequireHttpsMetadata = false;
     cfg.SaveToken = true;
-    cfg.TokenValidationParameters = new TokenValidationParameters() {
+    cfg.TokenValidationParameters = new TokenValidationParameters()
+    {
         ValidIssuer = authenticationSettings.JwtIssuer,
         ValidAudience = authenticationSettings.JwtIssuer,
         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(authenticationSettings.JwtKey))
     };
 });
-builder.Services.AddAuthorization(options => {
-    options.AddPolicy("HasNationality", policyBuilder => {
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("HasNationality", policyBuilder =>
+    {
         policyBuilder.RequireClaim("Nationality");
     });
-    options.AddPolicy("AtLeast20", policyBuilder => {
+    options.AddPolicy("AtLeast20", policyBuilder =>
+    {
         policyBuilder.AddRequirements(new MinimumAgeRequirement(20));
     });
-    options.AddPolicy("AtLeast2Restaurants", policyBuilder => {
+    options.AddPolicy("AtLeast2Restaurants", policyBuilder =>
+    {
         policyBuilder.AddRequirements(new MinRestaurantsCreatedRequirement(2));
     });
 });
@@ -63,6 +70,13 @@ builder.Services.AddScoped<IValidator<RestaurantQuery>, RestaurantQueryValidator
 builder.Services.AddSingleton(authenticationSettings);
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddSwaggerGen();
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("FrontendClient", policyBuilder =>
+    {
+        policyBuilder.AllowAnyMethod().AllowAnyHeader().WithOrigins("http://localhost:8080");
+    });
+});
 
 Console.WriteLine("Setting up logging...");
 builder.Logging.ClearProviders();
@@ -74,6 +88,7 @@ var app = builder.Build();
 
 // Configure the HTTP request pipeline.
 
+app.UseCors("FrontendClient");
 app.Services.CreateScope().ServiceProvider.GetService<RestaurantSeeder>()?.Seed();
 
 app.UseMiddleware<TimeTrackingMiddleware>();
