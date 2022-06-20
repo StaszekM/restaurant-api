@@ -5,6 +5,7 @@ using AutoMapper;
 using RestaurantApi.Exceptions;
 using Microsoft.AspNetCore.Authorization;
 using RestaurantApi.Authorization;
+using System.Linq.Expressions;
 
 namespace RestaurantApi.Services;
 public interface IRestaurantService
@@ -66,6 +67,17 @@ public class RestaurantService : IRestaurantService
                             string.IsNullOrEmpty(searchPhrase) ||
                             r.Name.ToLower().Contains(searchPhrase.ToLower()) ||
                             r.Description.ToLower().Contains(searchPhrase.ToLower()));
+
+        if (!string.IsNullOrEmpty(query.SortBy))
+        {
+            var columnsSelectors = new Dictionary<string, Expression<Func<Restaurant, object>>>() {
+                {nameof(Restaurant.Name), r => r.Name},
+                {nameof(Restaurant.Description), r => r.Description},
+                {nameof(Restaurant.Category), r => r.Category}
+            };
+            var selectedColumn = columnsSelectors[query.SortBy];
+            restaurantsUnpaginated = query.SortDirection == SortDirection.ASC ? restaurantsUnpaginated.OrderBy(selectedColumn) : restaurantsUnpaginated.OrderByDescending(selectedColumn);
+        }
 
         List<Restaurant> restaurants = restaurantsUnpaginated.Skip(pageSize * (pageNumber - 1)).Take(pageSize).ToList();
 
