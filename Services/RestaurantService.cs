@@ -12,7 +12,7 @@ public interface IRestaurantService
     int Create(CreateRestaurantDto dto);
     void Delete(int id);
     void Edit(int id, EditRestaurantDto dto);
-    IEnumerable<RestaurantDto> GetAll(string? searchPhrase);
+    PageResult<RestaurantDto> GetAll(RestaurantQuery query);
     RestaurantDto GetById(int id);
 }
 
@@ -53,19 +53,25 @@ public class RestaurantService : IRestaurantService
         return _mapper.Map<RestaurantDto>(restaurant);
     }
 
-    public IEnumerable<RestaurantDto> GetAll(string? searchPhrase)
+    public PageResult<RestaurantDto> GetAll(RestaurantQuery query)
     {
-        var restaurants = _context.Restaurants
+        var searchPhrase = query.SearchPhrase;
+        var pageSize = query.PageSize;
+        var pageNumber = query.PageNumber;
+
+        var restaurantsUnpaginated = _context.Restaurants
                             .Include(r => r.Address)
                             .Include(r => r.Dishes)
                             .Where(r =>
                             string.IsNullOrEmpty(searchPhrase) ||
                             r.Name.ToLower().Contains(searchPhrase.ToLower()) ||
-                            r.Description.ToLower().Contains(searchPhrase.ToLower()))
-                            .ToList();
+                            r.Description.ToLower().Contains(searchPhrase.ToLower()));
+
+        List<Restaurant> restaurants = restaurantsUnpaginated.Skip(pageSize * (pageNumber - 1)).Take(pageSize).ToList();
+
         var restaurantDtos = _mapper.Map<List<RestaurantDto>>(restaurants);
 
-        return restaurantDtos;
+        return new PageResult<RestaurantDto>(restaurantDtos, restaurantsUnpaginated.Count(), pageSize, pageNumber);
     }
 
     public int Create(CreateRestaurantDto dto)

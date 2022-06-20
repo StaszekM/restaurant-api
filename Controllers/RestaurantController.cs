@@ -19,9 +19,9 @@ public class RestaurantController : ControllerBase
     }
 
     [HttpGet]
-    public ActionResult<IEnumerable<RestaurantDto>> GetAll([FromQuery] string? searchPhrase)
+    public ActionResult<PageResult<RestaurantDto>> GetAll([FromQuery] RestaurantQuery query)
     {
-        var restaurantDtos = _restaurantService.GetAll(searchPhrase);
+        var restaurantDtos = _restaurantService.GetAll(query);
         return Ok(restaurantDtos);
     }
 
