@@ -5,10 +5,11 @@ using Microsoft.AspNetCore.StaticFiles;
 namespace RestaurantApi.Controllers;
 
 [Route("file")]
-[Authorize]
+// [Authorize]
 public class FileController : ControllerBase
 {
     [HttpGet]
+    [ResponseCache(Duration = 1200, VaryByQueryKeys = new[] { "fileName" })]
     public ActionResult GetFile([FromQuery] string fileName)
     {
         var rootPath = Directory.GetCurrentDirectory();
@@ -36,7 +37,7 @@ public class FileController : ControllerBase
             var rootPath = Directory.GetCurrentDirectory();
             var filePath = $"{rootPath}/PrivateFiles/{file.FileName}";
 
-            using(var stream = new FileStream(filePath, FileMode.Create))
+            using (var stream = new FileStream(filePath, FileMode.Create))
             {
                 file.CopyTo(stream);
             }
