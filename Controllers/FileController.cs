@@ -9,14 +9,16 @@ namespace RestaurantApi.Controllers;
 public class FileController : ControllerBase
 {
     [HttpGet]
-    public ActionResult GetFile([FromQuery] string fileName) {
+    public ActionResult GetFile([FromQuery] string fileName)
+    {
         var rootPath = Directory.GetCurrentDirectory();
 
         var filePath = $"{rootPath}/PrivateFiles/{fileName}";
 
         var fileExists = System.IO.File.Exists(filePath);
 
-        if (fileExists) {
+        if (fileExists)
+        {
             var fileContents = System.IO.File.ReadAllBytes(filePath);
             var contentProvider = new FileExtensionContentTypeProvider();
             contentProvider.TryGetContentType(fileName, out string contentType);
@@ -24,5 +26,24 @@ public class FileController : ControllerBase
         }
 
         return NotFound();
+    }
+
+    [HttpPost]
+    public ActionResult Upload([FromForm] IFormFile file)
+    {
+        if (file is not null && file.Length > 0)
+        {
+            var rootPath = Directory.GetCurrentDirectory();
+            var filePath = $"{rootPath}/PrivateFiles/{file.FileName}";
+
+            using(var stream = new FileStream(filePath, FileMode.Create))
+            {
+                file.CopyTo(stream);
+            }
+
+            return Ok();
+        }
+
+        return BadRequest();
     }
 }
