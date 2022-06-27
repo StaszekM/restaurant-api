@@ -11,6 +11,7 @@ using RestaurantApi.Models.Validators;
 using System.Text;
 using RestaurantApi.Authorization;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -56,7 +57,7 @@ builder.Services.AddScoped<IAuthorizationHandler, ResourceOperationRequirementHa
 builder.Services.AddScoped<IAuthorizationHandler, MinRestaurantsCreatedRequirementHandler>();
 builder.Services.AddScoped<IUserContextService, UserContextService>();
 builder.Services.AddControllers().AddFluentValidation();
-builder.Services.AddDbContext<RestaurantDbContext>();
+builder.Services.AddDbContext<RestaurantDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("RestaurantDbConnection")));
 builder.Services.AddScoped<RestaurantSeeder>();
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 builder.Services.AddScoped<IRestaurantService, RestaurantService>();

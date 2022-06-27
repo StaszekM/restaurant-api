@@ -4,12 +4,16 @@ namespace RestaurantApi.Entities;
 
 public class RestaurantDbContext : DbContext
 {
-    private string _connectionString = "Server=localhost\\SQLEXPRESS;Database=RestaurantDb;Trusted_Connection=True;";
     public DbSet<Restaurant> Restaurants { get; set; } = null!;
     public DbSet<Address> Addresses { get; set; } = null!;
     public DbSet<Dish> Dishes { get; set; } = null!;
     public DbSet<Role> Roles { get; set; } = null!;
     public DbSet<User> Users { get; set; } = null!;
+
+    public RestaurantDbContext(DbContextOptions<RestaurantDbContext> options) : base(options)
+    {
+        
+    }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -22,10 +26,5 @@ public class RestaurantDbContext : DbContext
 
         modelBuilder.Entity<User>().Property(u => u.Email).IsRequired();
         modelBuilder.Entity<Role>().Property(r => r.Name).IsRequired();
-    }
-
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-    {
-        optionsBuilder.UseSqlServer(_connectionString);
     }
 }
