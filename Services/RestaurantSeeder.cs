@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore;
 using RestaurantApi.Entities;
 
 namespace RestaurantApi.Services;
@@ -13,6 +14,12 @@ public class RestaurantSeeder
     {
         if (_dbContext.Database.CanConnect())
         {
+            var pendingMigrations = _dbContext.Database.GetPendingMigrations();
+
+            if (pendingMigrations is not null && pendingMigrations.Any()) {
+                _dbContext.Database.Migrate();
+            }
+
             if (!_dbContext.Restaurants.Any())
             {
                 var restaurants = GetRestaurants();
