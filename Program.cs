@@ -28,7 +28,7 @@ builder.Services.AddAuthentication(options =>
     options.DefaultChallengeScheme = "Bearer";
 }).AddJwtBearer(cfg =>
 {
-    cfg.RequireHttpsMetadata = false;
+    cfg.RequireHttpsMetadata = false
     cfg.SaveToken = true;
     cfg.TokenValidationParameters = new TokenValidationParameters()
     {
