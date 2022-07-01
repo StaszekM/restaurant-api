@@ -19,6 +19,7 @@ public class RestaurantController : ControllerBase
     }
 
     [HttpGet]
+    [AllowAnonymous]
     public ActionResult<PageResult<RestaurantDto>> GetAll([FromQuery] RestaurantQuery query)
     {
         var restaurantDtos = _restaurantService.GetAll(query);
